@@ -1,0 +1,84 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+*.egg-info/
+.eggs/
+eggs/
+dist/
+build/
+develop-eggs/
+parts/
+sdist/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.manifest
+*.spec
+
+# Flask instance folder
+# Might be used for config or databases
+instance/
+
+# Project-specific temporary uploads folder
+# IMPORTANT: Ignore user uploaded files
+uploads/
+
+# Databases (if you add one later)
+*.db
+*.sqlite3
+
+# Log files
+*.log
+logs/
+
+# Environment variables file
+# Contains secrets like API keys or SECRET_KEY
+.env*
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor / IDE specific settings folders
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Python type checking cache
+.mypy_cache/
+.pytype/
+.pytest_cache/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+*.py,cover
+.hypothesis/
+
