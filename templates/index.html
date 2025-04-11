@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Column Comparator (Python/Flask)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Add custom styles if needed, or rely on Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+         /* Style file inputs like in the Vue version */
+        input[type="file"]::file-selector-button {
+            font-weight: 600;
+            color: white;
+            background-color: #3b82f6; /* bg-blue-500 */
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem; /* rounded-md */
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            margin-right: 1rem; /* file:mr-4 */
+        }
+        input[type="file"]::file-selector-button:hover {
+            background-color: #2563eb; /* bg-blue-600 */
+        }
+        /* Simple flash message styling */
+        .flash-error {
+            background-color: #fee2e2; /* red-100 */
+            border-color: #fecaca; /* red-300 */
+            color: #b91c1c; /* red-700 */
+        }
+         .flash-success { /* Optional: Add success styling if needed */
+            background-color: #dcfce7; /* green-100 */
+            border-color: #bbf7d0; /* green-300 */
+            color: #15803d; /* green-700 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-6 sm:p-8 rounded-lg shadow-md w-full max-w-2xl">
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">Excel Column Comparator (Python/Flask)</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="mb-4 space-y-2">
+            {% for category, message in messages %}
+              <div class="p-3 rounded-md text-sm border {{ 'flash-error' if category == 'error' else 'flash-success' }}" role="alert">
+                {{ message }}
+              </div>
+            {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="post" enctype="multipart/form-data" action="{{ url_for('index') }}" class="space-y-4 mb-6">
+             <div>
+                <label for="file1" class="block text-sm font-medium text-gray-700 mb-1">Select First Excel File (File X):</label>
+                <input type="file" id="file1" name="file1" accept=".xlsx, .xls" required
+                       class="block w-full text-sm text-gray-500 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <div>
+                <label for="file2" class="block text-sm font-medium text-gray-700 mb-1">Select Second Excel File (File Y):</label>
+                <input type="file" id="file2" name="file2" accept=".xlsx, .xls" required
+                       class="block w-full text-sm text-gray-500 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+             <div>
+                <label for="columnName" class="block text-sm font-medium text-gray-700 mb-1">Column Name to Compare:</label>
+                <input type="text" id="columnName" name="columnName" placeholder="Enter exact column header name" required
+                       class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+
+             <div class="text-center pt-2">
+                <button type="submit"
+                        class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Compare Columns
+                </button>
+            </div>
+        </form>
+
+        {% if results %}
+        <div id="resultsArea" class="mt-6 p-4 border border-gray-200 rounded-md bg-gray-50 min-h-[100px]">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2 text-center">Results</h2>
+            <div class="text-sm text-gray-600 space-y-3">
+                <p class="text-center font-semibold mb-3 text-gray-800">
+                    Comparison Results for Column: "{{ results.colName }}"
+                </p>
+
+                {% if not results.unique1 and not results.unique2 %}
+                    <div class="text-center text-green-700 font-medium">
+                        The unique values in this column are identical in both files (after cleaning).
+                    </div>
+                {% else %}
+                    <div class="mb-3 p-3 border rounded-md bg-white">
+                        <h3 class="font-semibold text-blue-700 mb-1">
+                            Values found ONLY in {{ results.file1Name }} ({{ results.unique1|length }}):
+                        </h3>
+                        {% if results.unique1 %}
+                            <ul class="list-disc list-inside text-xs max-h-40 overflow-y-auto">
+                                {% for item in results.unique1 %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-xs italic text-gray-500">None</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="p-3 border rounded-md bg-white">
+                        <h3 class="font-semibold text-purple-700 mb-1">
+                            Values found ONLY in {{ results.file2Name }} ({{ results.unique2|length }}):
+                        </h3>
+                        {% if results.unique2 %}
+                            <ul class="list-disc list-inside text-xs max-h-40 overflow-y-auto">
+                                {% for item in results.unique2 %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-xs italic text-gray-500">None</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% elif error %}
+         {% else %}
+         <div class="mt-6 p-4 border border-gray-200 rounded-md bg-gray-50 min-h-[100px]">
+             <p class="text-center italic text-gray-500">Please select two files, enter a column name, and click 'Compare'.</p>
+        </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>
+
